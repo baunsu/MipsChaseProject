@@ -55,7 +55,7 @@ public class Target : MonoBehaviour
         Vector3 hopDir = rotation * moveDir;
 
         m_vHopStartPos = transform.position;
-        m_vHopEndPos = m_vHopStartPos + (hopDir * m_fHopSpeed);
+        m_vHopEndPos = m_vHopStartPos + (hopDir * m_fHopSpeed * m_fHopTime);
         m_fHopStart = Time.time;
 
         transform.up = hopDir;
@@ -85,7 +85,7 @@ public class Target : MonoBehaviour
             float hop_time = (Time.time - m_fHopStart) / m_fHopTime; 
             transform.position = Vector3.Lerp(m_vHopStartPos, m_vHopEndPos, hop_time);
 
-            if (hop_time >= 0.5f)
+            if ((Time.time - m_fHopStart) >= m_fHopTime)
             {
                 m_nState = eState.kIdle;
                 m_fHopStart = Time.time;

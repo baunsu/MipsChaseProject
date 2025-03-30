@@ -102,8 +102,11 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         GetComponent<Renderer>().material.color = stateColors[(int)m_nState];
+
+        if (m_nState == eState.kRecovering)
+            return;
         
-        if (!IsDiving() || m_nState != eState.kRecovering)
+        if (!IsDiving())
         {
             m_fSpeed = Mathf.MoveTowards(m_fSpeed, m_fTargetSpeed, m_fIncSpeed);
             
@@ -129,7 +132,7 @@ public class Player : MonoBehaviour
             float dive_finish = (Time.time - m_fDiveStartTime) / m_fDiveTime; 
             transform.position = Vector3.Lerp(m_vDiveStartPos, m_vDiveEndPos, dive_finish);
 
-            if (dive_finish >= 1.0f)
+            if ((Time.time - m_fDiveStartTime) >= m_fDiveTime)
             {
                 m_nState = eState.kRecovering;
                 m_fDiveStartTime = Time.time;
@@ -137,7 +140,8 @@ public class Player : MonoBehaviour
         }
         else if (m_nState == eState.kRecovering)
         {
-            if ((Time.time + m_fDiveStartTime) >= m_fDiveRecoveryTime)
+            m_fSpeed = 0.0f;
+            if ((Time.time - m_fDiveStartTime) >= m_fDiveRecoveryTime)
                 m_nState = eState.kMoveSlow;
         }
         else
