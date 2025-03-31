@@ -103,26 +103,30 @@ public class Player : MonoBehaviour
     {
         GetComponent<Renderer>().material.color = stateColors[(int)m_nState];
 
-        if (m_nState == eState.kRecovering)
+        if (m_nState == eState.kRecovering || IsDiving())
             return;
         
-        if (!IsDiving())
-        {
-            m_fSpeed = Mathf.MoveTowards(m_fSpeed, m_fTargetSpeed, m_fIncSpeed);
-            
-            float angleDiff = Mathf.DeltaAngle(transform.rotation.z, m_fTargetAngle);
-            
-            if (m_fSpeed >= m_fMagnitudeFast)
-            {
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0,0,m_fTargetAngle), m_fFastRotateSpeed);
-            }
-            else
-            {
-                transform.rotation = Quaternion.Euler(0, 0, m_fTargetAngle);
-            }
+        
+        m_fSpeed = Mathf.MoveTowards(m_fSpeed, m_fTargetSpeed, m_fIncSpeed);
 
-            transform.position += -transform.right * m_fSpeed;
+        if (m_fSpeed >= m_fMaxSpeed)
+        {
+            m_nState = eState.kMoveFast;
         }
+        else 
+        {
+            m_nState = eState.kMoveSlow;
+        }
+
+        if (m_nState == eState.kMoveFast)
+        {
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0,0,m_fTargetAngle), m_fFastRotateSpeed);
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, 0, m_fTargetAngle);
+        }
+        transform.position += -transform.right * m_fSpeed;
     }
     
     void Update()
